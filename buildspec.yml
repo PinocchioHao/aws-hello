@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+      - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  build:
+    commands:
+      - echo "Building Spring Boot project..."
+      - mvn package -DskipTests=true
+
+artifacts:
+  files:
+    - target/*.jar
+  discard-paths: yes

@@ -23,7 +23,10 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Image pushed: $REPOSITORY_URI:$IMAGE_TAG"
       # 这里必须和 ECS task definition 里的 container name 完全一致
-      - printf '[{"name":"demo-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      #- printf '[{"name":"demo-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"demo-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - ls -l
+      - cat imagedefinitions.json
 
 artifacts:
   files:

@@ -3,26 +3,28 @@ version: 0.2
 env:
   variables:
     REPOSITORY_URI: 677748259921.dkr.ecr.ap-southeast-2.amazonaws.com/simple-docker-service-0aeda6e6d013
-  # 这里不用写 IMAGE_TAG: latest，而是用系统变量
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $REPOSITORY_URI
-      - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - export IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo IMAGE_TAG=$IMAGE_TAG
+
   build:
     commands:
       - echo Build started on `date`
       - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+
   post_build:
     commands:
       - echo Build completed on `date`
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Image pushed: $REPOSITORY_URI:$IMAGE_TAG"
-      # 把构建好的镜像信息写到 imagedefinitions.json (ECS 部署需要这个)
+      # 这里必须和 ECS task definition 里的 container name 完全一致
       - printf '[{"name":"demo-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
 artifacts:
   files:
     - imagedefinitions.json
